@@ -1,0 +1,16 @@
+[Unit]
+Description=HAProxy Load Balancer
+After=syslog.target network.target
+
+[Service]
+Environment=CONFIG=/etc/haproxy/haproxy.cfg
+Environment=KUBECONFIG=/etc/haproxy/kube.cfg
+Environment=PIDFILE=/run/haproxy.pid
+ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c
+ExecStart=/usr/sbin/haproxy-systemd-wrapper -f $CONFIG -p $PIDFILE
+ExecReload=/usr/sbin/haproxy -f $CONFIG -c
+ExecReload=/bin/kill -USR2 $MAINPID
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
